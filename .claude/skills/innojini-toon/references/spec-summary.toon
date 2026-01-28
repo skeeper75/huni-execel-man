@@ -1,0 +1,62 @@
+# TOON Specification Summary (v2.0)
+# 이 파일 자체가 TOON 형식의 예시입니다
+
+meta:
+  version: 2.0
+  status: stable
+  license: MIT
+
+# 데이터 타입별 표현
+types[6]{type,syntax,example}:
+  null,null,null
+  boolean,true/false,true
+  number,decimal,"42, 3.14, -1"
+  string,unquoted or quoted,hello world
+  array,[N]: or [N]{fields}:,tags[3]: a,b,c
+  object,key: value,name: Alice
+
+# 배열 형식 선택 기준
+array_formats[3]{format,condition,example}:
+  inline,[N]: values,tags[3]: a,b,c
+  tabular,[N]{fields}: rows,users[2]{id,name}: ...
+  list,[N]: - items,items[3]: - ...
+
+# 탭형식 적격성 조건
+tabular_eligibility[4]{condition,required}:
+  all items are objects,true
+  all objects have same keys,true
+  all values are primitives,true
+  no nested arrays/objects,true
+
+# 쿼팅 규칙
+quoting_rules[7]{condition,needs_quote,example}:
+  empty string,true,""
+  leading/trailing spaces,true," padded "
+  contains delimiter,true,"a,b"
+  contains colon,true,"a:b"
+  looks like boolean/null/number,true,"true"
+  starts with "- ",true,"- item"
+  unicode/emoji,false,안녕 👋
+
+# 키 유효 패턴
+key_patterns:
+  valid_identifier: ^[a-zA-Z_][a-zA-Z0-9_.]*$
+  needs_quote: 공백/특수문자/숫자시작
+
+# 이스케이프 시퀀스
+escapes[4]{sequence,meaning}:
+  \\n,newline
+  \\t,tab
+  \\",double quote
+  \\\\,backslash
+
+# 들여쓰기
+indentation:
+  default_spaces: 2
+  consistency: required within document
+
+# 빈 컨테이너
+empty_containers[3]{type,representation}:
+  empty object,key:
+  empty array,key[0]:
+  root empty object,(empty output)
