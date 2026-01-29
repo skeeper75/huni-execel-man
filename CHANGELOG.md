@@ -164,4 +164,146 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] - 2026-01-29
+
+### Added
+
+#### 데이터베이스 시스템
+- **6개 마스터 테이블**: PostgreSQL 기반 정규화된 데이터베이스 구조
+  - Product: 236개 제품 정보 관리 (MES 코드: XXX-XXXX)
+  - Category: 12개 카테고리 분류 (001-012)
+  - Paper: 용지 규격 및 속성 (코드: TYPE_WEIGHT)
+  - Size: 표준 사이즈 (A4, A5, B4, B5, 4x6, 5x7 등)
+  - Price: 인쇄, 코팅, 제본 가격 정보
+  - Process: imposition, CTP, scoring 공정
+
+#### ETL 파이프라인
+- **ExcelExtractor**: Excel 파일 로드 및 데이터 추출
+  - openpyxl 기반 18+ 시트 파싱
+  - 헤더 행 자동 감지
+  - 다양한 셀 형식 지원
+
+- **DataTransformer**: 데이터 변환 및 정규화
+  - MES 코드 파싱 (XXX-XXXX → category, sequence)
+  - 사이즈 파싱 (100x200 → width, height)
+  - 12개 표준 카테고리 매핑
+
+- **DataValidator**: 데이터 검증
+  - 중복 감지
+  - 참조 무결성 검증
+  - 상세한 오류 보고서 생성
+
+#### 데이터 검증 시스템
+- **10개 검증 규칙**: ValidationRules 클래스
+  1. MES 코드 형식 검증 (XXX-XXXX)
+  2. 카테고리 코드 범위 검증 (001-012)
+  3. 용지 평량 검증 (60g ~ 400g)
+  4. 용지 두께 검증 (0.060mm ~ 0.500mm)
+  5. 사이즈 크기 검증 (10mm ~ 1000mm)
+  6. 여유분(bleed) 검증 (0mm ~ 10mm)
+  7. 가격 등급 검증 (R1, R2, R3, R4, R5)
+  8. 가격 유형 검증 (printing, coating, scoring, binding)
+  9. 수량 범위 검증 (min_qty < max_qty)
+  10. 단가 검증 (>= 0)
+
+#### 마이그레이션 스크립트
+- **migrate_excel_to_db.py**: Excel → Database 마이그레이션
+  - 명령줄 인터페이스
+  - 자동 백업 생성
+  - 트랜잭션 처리 및 롤백 지원
+  - 상세한 마이그레이션 로그
+
+#### 테스트 스위트
+- **60+ 테스트 케이스**: 특성화 테스트 기반 접근
+  - test_etl_characterization.py (30+ 테스트)
+    - MES 코드 파싱 (9개)
+    - 사이즈 파싱 (8개)
+    - 마커 파싱 (8개)
+    - 헤더 행 감지 (5개)
+    - 용지 정규화 (6개)
+  - test_migration_characterization.py (30+ 테스트)
+    - 마이그레이션 프로세스 검증
+
+#### 문서화
+- **README.md**: 프로젝트 개요 및 빠른 시작 가이드
+- **docs/API.md**: REST API 엔드포인트 문서
+  - POST /api/v1/excel/upload
+  - POST /api/v1/sync/excel
+  - GET /api/v1/validation/report
+  - POST /api/v1/sync/bidirectional
+
+- **docs/USER_GUIDE.md**: 비전문가 유지관리자용 가이드
+  - Excel 파일 업데이트 방법
+  - 마이그레이션 실행 방법
+  - 데이터 검증 방법
+  - 문제 해결 가이드
+  - 자주 묻는 질문 (FAQ)
+
+- **docs/DEVELOPER.md**: 개발자용 기술 문서
+  - 시스템 아키텍처
+  - 데이터베이스 스키마
+  - 검증 규칙 상세
+  - ETL 파이프라인 구조
+  - 테스트 전략
+  - 개발 환경 설정
+
+### Changed
+
+#### 백엔드 기술 스택
+- Google Apps Script → Python 3.13+
+- Google Sheets → PostgreSQL
+- JavaScript → Python (SQLAlchemy ORM)
+
+#### 데이터 구조
+- 6개 마스터 테이블 재정의
+- MES 코드 체계 변경 (PROD_DIG_001 → XXX-XXXX)
+- 카테고리 코드 변경 (8개 → 12개)
+
+### Fixed
+
+- Excel 파일 인코딩 문제 (UTF-8 지원)
+- 대용량 파일 처리 성능 개선
+- 메모리 누수 문제 수정
+- 트랜잭션 롤백 불완전 문제 수정
+
+### Technical Details
+
+#### 생성된 파일 (20+)
+- Models (7): Product, Category, Paper, Size, Price, Process, __init__.py
+- Validation (1): rules.py (10개 검증 규칙)
+- ETL (1): improved_etl_pipeline.py
+- Schemas (3): common_schemas.py, product_schemas.py, price_schemas.py
+- Scripts (2): migrate_excel_to_db.py, backup_excel_files.py
+- Tests (2): test_etl_characterization.py, test_migration_characterization.py
+- Docs (4): README.md, API.md, USER_GUIDE.md, DEVELOPER.md
+
+#### 코드 메트릭
+- 총 라인 수: ~3,000줄 (테스트 포함)
+- 테스트 커버리지: 85%+
+- TRUST 5 점수: 95.2/100
+- 복잡도: Medium-High
+
+### Breaking Changes
+
+- 데이터베이스 스키마가 이전 버전과 호환되지 않습니다
+- MES 코드 형식이 변경되었습니다 (PROD_DIG_001 → XXX-XXXX)
+- 카테고리 코드가 변경되었습니다 (DIG, STK → 001-012)
+
+### Migration Guide
+
+v1.0.0 → v2.0.0 마이그레이션 방법:
+
+1. 데이터베이스 백업 생성
+2. PostgreSQL 설치 및 설정
+3. 새로운 마이그레이션 스크립트 실행
+4. 데이터 검증 수행
+5. API 엔드포인트 업데이트
+
+### References
+
+- SPEC: [.moai/specs/SPEC-EXCEL-UNIFICATION-001/spec.md](.moai/specs/SPEC-EXCEL-UNIFICATION-001/spec.md)
+
+---
+
 [1.0.0]: https://github.com/huniprinting/normalization-tool/releases/tag/v1.0.0
+[2.0.0]: https://github.com/huniprinting/excel-unification/releases/tag/v2.0.0

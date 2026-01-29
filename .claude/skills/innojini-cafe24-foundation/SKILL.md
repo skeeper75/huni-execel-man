@@ -1,5 +1,5 @@
 ---
-name: cafe24-foundation
+name: innojini-cafe24-foundation
 description: |
   Cafe24 API 전체 레퍼런스. Admin API(165개 리소스), Front API(20개 리소스) 완전 문서화.
   특화 스킬(주문연동, 상품연동, 정산 등)의 기반 스킬.

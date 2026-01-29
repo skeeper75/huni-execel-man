@@ -504,6 +504,12 @@ function sumValues(obj) {
 
 /**
  * Parse MES code (alias for compatibility)
+ * This is a legacy alias that calls parseMesCode from Utils/CodeGenerator.gs
+ *
+ * @param {string} code - MES code to parse (e.g., "001001" or "001-001")
+ * @return {object|null} - {category, sequence, fullCode} or null if invalid
+ *
+ * @deprecated Use parseMesCode directly from Utils/CodeGenerator.gs
  */
 function parse_mes_code(code) {
   return parseMesCode(code);

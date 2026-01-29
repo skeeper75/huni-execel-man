@@ -379,3 +379,32 @@ function getTimestamp() {
 function padZero(num) {
   return num < 10 ? '0' + num : num.toString();
 }
+
+/**
+ * Parse MES code format (XXX-XXXX or XXXXXX)
+ * MES codes are 6-digit codes where:
+ * - First 3 digits represent category (001, 002, etc.)
+ * - Last 3 digits represent sequence (001, 002, etc.)
+ *
+ * @param {string} code - MES code to parse (e.g., "001001" or "001-001")
+ * @return {object|null} - {category, sequence, fullCode} or null if invalid
+ */
+function parseMesCode(code) {
+  if (!code || typeof code !== 'string') {
+    return null;
+  }
+
+  // Remove any hyphens or spaces
+  var normalizedCode = code.replace(/[-\s]/g, '');
+
+  // Check if it's exactly 6 digits
+  if (normalizedCode.length !== 6 || !/^\d{6}$/.test(normalizedCode)) {
+    return null;
+  }
+
+  return {
+    category: normalizedCode.substring(0, 3),
+    sequence: normalizedCode.substring(3, 6),
+    fullCode: code
+  };
+}

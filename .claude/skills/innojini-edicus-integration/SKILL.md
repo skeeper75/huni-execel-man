@@ -1,5 +1,5 @@
 ---
-name: edicus-integration
+name: innojini-edicus-integration
 description: |
   Edicus 플랫폼(모션원) 연동을 위한 API 및 SDK 가이드. 온라인 편집기 기반 맞춤형 인쇄물(포토북, 명함, 스티커 등) 주문 시스템 연동.
   
